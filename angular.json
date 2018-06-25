@@ -139,6 +139,126 @@
           }
         }
       }
+    },
+    "ngx-line-clamp-directive": {
+      "root": "projects/ngx-line-clamp-directive",
+      "sourceRoot": "projects/ngx-line-clamp-directive/src",
+      "projectType": "library",
+      "prefix": "nlc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ngx-line-clamp-directive/tsconfig.lib.json",
+            "project": "projects/ngx-line-clamp-directive/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/ngx-line-clamp-directive/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-line-clamp-directive/src/test.ts",
+            "tsConfig": "projects/ngx-line-clamp-directive/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-line-clamp-directive/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ngx-line-clamp-directive/tsconfig.lib.json",
+              "projects/ngx-line-clamp-directive/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "core": {
+      "root": "projects/core",
+      "sourceRoot": "projects/core/src",
+      "projectType": "library",
+      "prefix": "nlc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/core/tsconfig.lib.json",
+            "project": "projects/core/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/core/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/core/src/test.ts",
+            "tsConfig": "projects/core/tsconfig.spec.json",
+            "karmaConfig": "projects/core/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/core/tsconfig.lib.json",
+              "projects/core/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "line-clamp": {
+      "root": "projects/line-clamp",
+      "sourceRoot": "projects/line-clamp/src",
+      "projectType": "library",
+      "prefix": "lc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/line-clamp/tsconfig.lib.json",
+            "project": "projects/line-clamp/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/line-clamp/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/line-clamp/src/test.ts",
+            "tsConfig": "projects/line-clamp/tsconfig.spec.json",
+            "karmaConfig": "projects/line-clamp/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/line-clamp/tsconfig.lib.json",
+              "projects/line-clamp/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "ngx-line-clamp",
