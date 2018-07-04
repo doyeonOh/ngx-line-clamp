@@ -17,11 +17,11 @@
       "dom"
     ],
     "paths": {
-      "line-clamp": [
-        "dist/line-clamp"
+      "ngx-line-clamp": [
+        "dist/ngx-line-clamp"
       ],
-      "line-clamp/*": [
-        "dist/line-clamp/*"
+      "ngx-line-clamp/*": [
+        "dist/ngx-line-clamp/*"
       ]
     }
   }

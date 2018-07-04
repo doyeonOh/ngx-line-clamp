@@ -5,10 +5,14 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "patch": "cd ./projects/ngx-line-clamp && npm version ${VERSION_UP_TYPE:='patch'} && cd ../../ && npm run publish",
+    "minor": "VERSION_UP_TYPE=minor npm run patch",
+    "major": "VERSION_UP_TYPE=major npm run patch",
+    "build": "ng build --prod ngx-line-clamp",
+    "publish": "npm run build && npm publish ./dist/ngx-line-clamp/"
   },
   "private": true,
   "dependencies": {
