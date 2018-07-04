@@ -1,4 +1,39 @@
 .line-clamp {
   width: 250px;
-  /* height: 250px; */
+  height: 250px;
+  border: 1px solid black;
+}
+
+.warpper {
+  display: flex;
+  justify-content: left;
+
+  .line-clamp-border-box {
+    width: 250px;
+    height: 250px;
+  
+    box-sizing: border-box;
+    padding: 27px;
+  
+    border: 10px solid black;
+  }
+  .line-clamp-content-box {
+    width: 250px;
+    height: 250px;
+  
+    box-sizing: content-box;
+    padding: 27px;
+  
+    border: 10px solid black;
+  }
+
+  .line-clamp-padding-box {
+    width: 250px;
+    height: 250px;
+  
+    box-sizing: padding-box;
+    padding: 27px;
+  
+    border: 10px solid black;
+  }
 }
