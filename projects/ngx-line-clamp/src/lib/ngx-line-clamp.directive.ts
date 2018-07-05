@@ -36,7 +36,7 @@ export class NgxLineClampDirective implements  AfterViewInit {
         console.error('Name of [parentClass] Element is not exist.');
         return ;
       }
-    } else {
+    } else if (!this.parentElement) {
       this.parentElement = this.rootElement.parentNode;
     }
 
