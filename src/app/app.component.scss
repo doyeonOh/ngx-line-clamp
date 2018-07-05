@@ -37,3 +37,29 @@
     border: 10px solid black;
   }
 }
+
+.custom {
+  display: flex;
+  justify-content: left;
+  border: 1px solid black;
+  flex-flow: column;
+  height: 300px;
+  width: 300px;
+
+  .custom-box {
+    height: 150px;
+    // min-height: 150px;
+    width: 100%;
+  }
+
+  .text-box {
+  }
+
+  .line-clamp-custom-parent {
+    line-height: 50px;
+  }
+}
+
+.text-area {
+  background: #ccc;
+}

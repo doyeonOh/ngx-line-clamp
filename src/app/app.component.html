@@ -4,20 +4,20 @@
 <div>
   <h1>LineClamp</h1>
   <div class="line-clamp">
-    <div ngxLineClamp [text]="testContent">
+    <div ngxLineClamp class="text-area" [text]="testContent">
     </div>
   </div>
 
   <h1>lineClamp - LineCount 3</h1>
   <div class="line-clamp">
-    <div ngxLineClamp [text]="testContent" [lineCount]="3">
+    <div ngxLineClamp class="text-area" [text]="testContent" [lineCount]="3">
     </div>
   </div>
   
   <h1>lineClamp - dynamic box-sizing='border-box'</h1>
   <div class="warpper">
     <div class="line-clamp-border-box">
-      <div ngxLineClamp [text]="testContent" >
+      <div ngxLineClamp class="text-area" [text]="testContent" >
       </div>
     </div>
   </div>
@@ -25,7 +25,7 @@
   <h1>lineClamp - dynamic box-sizing='content-box'</h1>
   <div class="warpper">
     <div class="line-clamp-content-box">
-      <div ngxLineClamp  [text]="testContent" >
+      <div ngxLineClamp class="text-area"  [text]="testContent" >
       </div>
     </div>
   </div>
@@ -33,7 +33,24 @@
   <h1>lineClamp - dynamic box-sizing='padding-box'</h1>
   <div class="warpper">
     <div class="line-clamp-padding-box">
-      <div ngxLineClamp  [text]="testContent" >
+      <div ngxLineClamp class="text-area"  [text]="testContent" >
+      </div>
+    </div>
+  </div>
+
+
+  <h1>lineClamp - custom parent element</h1>
+  <div class="custom">
+    <div class="custom-box">
+      dasfas
+    </div>
+    <div class="text-box">
+      <div>
+        hello world
+      </div>
+      <div class="line-clamp-custom-parent" >
+        <div ngxLineClamp class="text-area" [text]="testContent" [parentClass]="'custom'">
+        </div>
       </div>
     </div>
   </div>

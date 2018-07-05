@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'app';
 
   testContent = `Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -16,4 +16,16 @@ export class AppComponent {
     remaining essentially unchanged.
     It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
     and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`;
+
+
+  ngOnInit() {
+    setTimeout(() => {
+      this.testContent = `ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
+      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
+      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
+      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
+      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
+      `;
+    }, 1000);
+  }
 }
