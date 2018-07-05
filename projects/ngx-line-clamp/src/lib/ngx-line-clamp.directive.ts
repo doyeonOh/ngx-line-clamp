@@ -1,17 +1,18 @@
-import { Directive, Input, AfterViewInit, ElementRef, OnInit, HostListener, OnChanges } from '@angular/core';
+import { Directive, Input, AfterViewInit, ElementRef, OnInit, HostListener, OnChanges, AfterViewChecked } from '@angular/core';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
   selector: '[ngxLineClamp]'
 })
-export class NgxLineClampDirective implements OnChanges, AfterViewInit {
+export class NgxLineClampDirective implements  AfterViewInit {
   @Input() lineCount: number;
-  @Input() parentClass: string;
   @Input() text: string;
   @Input() options: any;
+  @Input() parentClass: string;
+  @Input() parentElement: any;
 
   rootElement: any;
-  parentElement: any;
+
 
   ELLIPSIS_CHARACTER = '\u2026';
   TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX = /[ .,;!?'‘’“”\-–—]+$/;
@@ -23,13 +24,6 @@ export class NgxLineClampDirective implements OnChanges, AfterViewInit {
   @HostListener('window:resize', ['$event'])
   scrollHandler(e: any) {
     this.runLineClamp(this.rootElement, this.parentElement, this.text);
-  }
-
-
-  ngOnChanges(changes: any): void {
-    if (changes.text && !changes.text.firstChange) {
-      this.runLineClamp(this.rootElement, this.parentElement, this.text);
-    }
   }
 
   ngAfterViewInit(): void {
@@ -47,11 +41,12 @@ export class NgxLineClampDirective implements OnChanges, AfterViewInit {
     }
 
     this.setStyle(this.rootElement, this.STYLE);
-    this.runLineClamp(this.rootElement, this.parentElement, this.text);
+    setTimeout(() => {
+      this.runLineClamp(this.rootElement, this.parentElement, this.text);
+    });
   }
 
   runLineClamp(rootElement: HTMLElement, parentElement: HTMLElement, text: string) {
-
     const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
     const rootParentHeight = this.getComputedStyleToPx(parentElement, 'height');
 
@@ -118,24 +113,29 @@ export class NgxLineClampDirective implements OnChanges, AfterViewInit {
   }
 
   truncateTextNode(textNode, rootElement, parentElement, maximumHeight, ellipsisCharacter, text) {
-    const textSplitArray = text.split(' ');
+    let textSplitArray = text.split(' ');
+    let nospace = false;
+    if (textSplitArray.length === 1) {
+      textSplitArray = text.split('');
+      nospace = true;
+    }
     let remainTextContent = '';
     let indexOfWhitespace = 0;
     let hasFullyContent = false;
 
     while (textSplitArray.length !== 0) {
-
+      // console.log('1 while');
       if (indexOfWhitespace + 1 > textSplitArray.length) {
         break;
       }
 
       indexOfWhitespace = indexOfWhitespace + 1;
-      remainTextContent = textSplitArray.slice(0, indexOfWhitespace).join(' ');
+      remainTextContent = textSplitArray.slice(0, indexOfWhitespace).join(nospace ? '' : ' ');
 
       textNode.textContent = remainTextContent;
 
       if (this.isOutOfParentArea(parentElement)) {
-        textNode.textContent = textSplitArray.slice(0, indexOfWhitespace - 1).join(' ');
+        textNode.textContent = textSplitArray.slice(0, indexOfWhitespace - 1).join(nospace ? '' : ' ');
         hasFullyContent = true;
         break;
       }
@@ -155,7 +155,11 @@ export class NgxLineClampDirective implements OnChanges, AfterViewInit {
     let textContent = textNode.textContent;
     let length = textContent.length;
 
-    while (length > 1) {
+    let limitCount = 30;
+
+
+    while (length > 1 && limitCount > 0) {
+
       // Trim off one trailing character and any trailing punctuation and whitespace.
       if (hasFullyContent) {
         textContent = textContent
@@ -167,9 +171,12 @@ export class NgxLineClampDirective implements OnChanges, AfterViewInit {
 
       const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
 
+
       if (rootHeight <= maximumHeight && !this.isOutOfParentArea(parentElement)) {
         return true;
       }
+
+      limitCount--;
     }
     return false;
   }

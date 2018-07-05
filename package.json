@@ -12,6 +12,7 @@
     "minor": "VERSION_UP_TYPE=minor npm run patch",
     "major": "VERSION_UP_TYPE=major npm run patch",
     "build": "ng build --prod ngx-line-clamp",
+    "postbuild": "cd dist && tar -zcf ngx-line-clamp.tgz ngx-line-clamp",
     "publish": "npm run build && npm publish ./dist/ngx-line-clamp/"
   },
   "private": true,
