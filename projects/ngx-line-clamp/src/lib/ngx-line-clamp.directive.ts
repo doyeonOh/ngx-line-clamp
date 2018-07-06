@@ -7,54 +7,48 @@ import { Directive, Input, AfterViewInit, ElementRef, OnInit, HostListener, OnCh
 export class NgxLineClampDirective implements  AfterViewInit {
   @Input() lineCount: number;
   @Input() text: string;
-  @Input() options: any;
-  @Input() parentClass: string;
-  @Input() parentElement: any;
+  @Input() ellipsis = '\u2026';
+  @Input() parentElement: HTMLElement;
 
   rootElement: any;
 
-
-  ELLIPSIS_CHARACTER = '\u2026';
   TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX = /[ .,;!?'‘’“”\-–—]+$/;
+
   STYLE = 'overflow:hidden;overflow-wrap:break-word;word-wrap:break-word';
 
   constructor(private el: ElementRef) {
   }
 
-  @HostListener('window:resize', ['$event'])
-  scrollHandler(e: any) {
-    this.runLineClamp(this.rootElement, this.parentElement, this.text);
-  }
-
   ngAfterViewInit(): void {
-    this.rootElement = this.el.nativeElement;
-
-    if (this.parentClass) {
-      this.parentElement = document.querySelector(`.${this.parentClass}`);
-
-      if (!this.parentElement) {
-        console.error('Name of [parentClass] Element is not exist.');
-        return ;
-      }
-    } else if (!this.parentElement) {
-      this.parentElement = this.rootElement.parentNode;
-    }
-
+    this.setElementVariables();
     this.setStyle(this.rootElement, this.STYLE);
+
     setTimeout(() => {
-      this.runLineClamp(this.rootElement, this.parentElement, this.text);
+      this.runLineClamp(this.rootElement, this.parentElement, this.text, this.ellipsis);
     });
   }
 
-  runLineClamp(rootElement: HTMLElement, parentElement: HTMLElement, text: string) {
+  @HostListener('window:resize', ['$event'])
+  scrollHandler(e: any) {
+    this.runLineClamp(this.rootElement, this.parentElement, this.text, this.ellipsis);
+  }
+
+  setElementVariables() {
+    this.rootElement = this.el.nativeElement;
+
+    if (!this.parentElement) {
+      this.parentElement = this.rootElement.parentNode;
+    }
+  }
+
+  runLineClamp(rootElement: HTMLElement, parentElement: HTMLElement, text: string, ellipsis: string) {
     const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
     const rootParentHeight = this.getComputedStyleToPx(parentElement, 'height');
 
-    const parentElementHeight = this.calculatePureHeight(parentElement);
+    const parentElementHeight = this.extractPureHeight(parentElement);
     const maximumHeight = this.calculationMaximumHeight(rootElement, parentElementHeight);
 
-    this.truncateElementNode(rootElement, rootElement, parentElement, maximumHeight,
-      (this.options && this.options.ellipsis) || this.ELLIPSIS_CHARACTER, text);
+    this.truncateElementNode(rootElement, parentElement, maximumHeight, text, ellipsis);
   }
 
   setStyle(element: HTMLElement, style: string) {
@@ -70,7 +64,7 @@ export class NgxLineClampDirective implements  AfterViewInit {
     return parseInt(propertyStyle.split('px')[0], 10);
   }
 
-  calculatePureHeight(element: HTMLElement) {
+  extractPureHeight(element: HTMLElement) {
     const boxSizing = this.getComputedStyle(element, 'boxSizing');
     let height = this.getComputedStyleToPx(element, 'height');
 
@@ -92,7 +86,7 @@ export class NgxLineClampDirective implements  AfterViewInit {
     return height;
   }
 
-  calculationMaximumHeight(element, parentElementHeight) {
+  calculationMaximumHeight(element: HTMLElement, parentElementHeight: number) {
     let lineHeight = this.getComputedStyle(element, 'lineHeight');
 
     if (lineHeight === 'normal') {
@@ -112,30 +106,33 @@ export class NgxLineClampDirective implements  AfterViewInit {
     return parentElement.scrollHeight > parentElement.offsetHeight;
   }
 
-  truncateTextNode(textNode, rootElement, parentElement, maximumHeight, ellipsisCharacter, text) {
-    let textSplitArray = text.split(' ');
-    let nospace = false;
+  truncateTextNode(textNode: Text, rootElement: HTMLElement, parentElement: HTMLElement,
+    maximumHeight: number, text: string, ellipsis: string) {
+
+    let splitCharacter = ' ';
+    let textSplitArray = text.split(splitCharacter);
+
     if (textSplitArray.length === 1) {
-      textSplitArray = text.split('');
-      nospace = true;
+      splitCharacter = '';
+      textSplitArray = text.split(splitCharacter);
     }
+
     let remainTextContent = '';
     let indexOfWhitespace = 0;
     let hasFullyContent = false;
 
     while (textSplitArray.length !== 0) {
-      // console.log('1 while');
       if (indexOfWhitespace + 1 > textSplitArray.length) {
         break;
       }
 
       indexOfWhitespace = indexOfWhitespace + 1;
-      remainTextContent = textSplitArray.slice(0, indexOfWhitespace).join(nospace ? '' : ' ');
+      remainTextContent = textSplitArray.slice(0, indexOfWhitespace).join(splitCharacter);
 
       textNode.textContent = remainTextContent;
 
       if (this.isOutOfParentArea(parentElement)) {
-        textNode.textContent = textSplitArray.slice(0, indexOfWhitespace - 1).join(nospace ? '' : ' ');
+        textNode.textContent = textSplitArray.slice(0, indexOfWhitespace - 1).join(splitCharacter);
         hasFullyContent = true;
         break;
       }
@@ -146,17 +143,18 @@ export class NgxLineClampDirective implements  AfterViewInit {
       rootElement,
       parentElement,
       maximumHeight,
-      ellipsisCharacter,
+      ellipsis,
       hasFullyContent
     );
   }
 
-  truncateTextNodeByCharacter (textNode, rootElement, parentElement, maximumHeight, ellipsisCharacter, hasFullyContent) {
+  truncateTextNodeByCharacter (textNode: Text, rootElement: HTMLElement, parentElement: HTMLElement,
+    maximumHeight: number, ellipsisCharacter: string, hasFullyContent: boolean) {
+
     let textContent = textNode.textContent;
     let length = textContent.length;
 
     let limitCount = 30;
-
 
     while (length > 1 && limitCount > 0) {
 
@@ -171,7 +169,6 @@ export class NgxLineClampDirective implements  AfterViewInit {
 
       const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
 
-
       if (rootHeight <= maximumHeight && !this.isOutOfParentArea(parentElement)) {
         return true;
       }
@@ -181,22 +178,30 @@ export class NgxLineClampDirective implements  AfterViewInit {
     return false;
   }
 
-  truncateElementNode(element: HTMLElement, rootElement, parentElement, maximumHeight, ellipsisCharacter, text) {
-    const childNodes = element.childNodes;
+  truncateElementNode(rootElement: HTMLElement, parentElement: HTMLElement, maximumHeight: number, text: string, ellipsis: string) {
+    this.removeChildNodes(rootElement);
 
-    for (let i = 0; i < childNodes.length; i++) {
-      const node = childNodes[i];
-      element.removeChild(node);
-    }
+    const textNode = this.appendTextNode(rootElement);
 
-    const textNode = document.createTextNode('');
-    element.appendChild(textNode);
-
-    if (this.truncateTextNode(textNode, rootElement, parentElement, maximumHeight, ellipsisCharacter, text)) {
+    if (this.truncateTextNode(textNode, rootElement, parentElement, maximumHeight, text, ellipsis)) {
       return true;
     } else {
       return false;
     }
+  }
+
+  private removeChildNodes(element: HTMLElement) {
+    const childNodes = element.childNodes;
+    for (let i = 0; i < childNodes.length; i++) {
+      const node = childNodes[i];
+      element.removeChild(node);
+    }
+  }
+
+  private appendTextNode(element: HTMLElement) {
+    const textNode = document.createTextNode('');
+    element.appendChild(textNode);
+    return textNode;
   }
 }
 
