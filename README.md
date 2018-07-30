@@ -1,7 +1,7 @@
 # NgxLineClamp
 
 angular 6+ simple line clamp. inspired by [line-clamp](https://github.com/yuanqing/line-clamp).
-working fine on responsive UI.
+working fine on responsive UI. [example](https://ngx-line-clamp.firebaseapp.com/)
 
 
 ## Install
