@@ -42,9 +42,6 @@ export class NgxLineClampDirective implements  AfterViewInit {
   }
 
   runLineClamp(rootElement: HTMLElement, parentElement: HTMLElement, text: string, ellipsis: string) {
-    const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
-    const rootParentHeight = this.getComputedStyleToPx(parentElement, 'height');
-
     const parentElementHeight = this.extractPureHeight(parentElement);
     const maximumHeight = this.calculationMaximumHeight(rootElement, parentElementHeight);
 
@@ -130,6 +127,13 @@ export class NgxLineClampDirective implements  AfterViewInit {
       remainTextContent = textSplitArray.slice(0, indexOfWhitespace).join(splitCharacter);
 
       textNode.textContent = remainTextContent;
+
+      const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
+
+      if (rootHeight >= maximumHeight) {
+        hasFullyContent = true;
+        break;
+      }
 
       if (this.isOutOfParentArea(parentElement)) {
         textNode.textContent = textSplitArray.slice(0, indexOfWhitespace - 1).join(splitCharacter);

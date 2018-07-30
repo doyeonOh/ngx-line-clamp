@@ -48,7 +48,6 @@
 
   .custom-box {
     height: 150px;
-    // min-height: 150px;
     width: 100%;
   }
 
@@ -62,4 +61,8 @@
 
 .text-area {
   background: #ccc;
+}
+
+.pre {
+  white-space: pre;
 }

@@ -22,6 +22,12 @@
       ],
       "ngx-line-clamp/*": [
         "dist/ngx-line-clamp/*"
+      ],
+      "lib": [
+        "dist/lib"
+      ],
+      "lib/*": [
+        "dist/lib/*"
       ]
     }
   }

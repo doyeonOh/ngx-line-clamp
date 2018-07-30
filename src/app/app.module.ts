@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { NgxLineClampDirective } from './../../projects/ngx-line-clamp/src/lib/ngx-line-clamp.directive';
+import { NgxLineClampDirective } from './../../projects/lib/src/lib/ngx-line-clamp.directive';
+import { PrismModule } from '@ngx-prism/core';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { NgxLineClampDirective } from './../../projects/ngx-line-clamp/src/lib/n
     NgxLineClampDirective
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    PrismModule
   ],
   providers: [],
   bootstrap: [AppComponent]

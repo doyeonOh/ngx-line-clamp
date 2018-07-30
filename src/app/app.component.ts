@@ -7,8 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
   title = 'app';
-  test = true;
-  testContent = `Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+
+  ipsumText = `Lorem Ipsum is simply dummy text of the printing and typesetting industry.
     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
     when an unknown printer took a galley of type and scrambled it to make a type specimen book.
     It has survived not only five centuries,
@@ -18,20 +18,42 @@ export class AppComponent implements OnInit {
     and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`;
 
 
-  ngOnInit() {
-    setTimeout(() => {
-      this.testContent = `ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
-      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
-      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
-      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
-      ised in the 1960s with the relised in the 1960s with the relised in the 1960s with the relised in the 1960s with the rel
-      `;
-      this.test = false;
-    }, 1000);
+  ex1 = `<div class="line-clamp">
+  <div ngxLineClamp class="text-area" [text]="ipsumText"></div>
+</div>`;
 
-    setTimeout(() => {
-      this.test = true;
-      this.testContent = 'asda';
-    }, 2000);
+  ex2 = `<div ngxLineClamp class="text-area" [text]="ipsumText" [lineCount]="3"></div>`;
+
+  ex3 = `<div class="line-clamp-border-box">
+  <div ngxLineClamp class="text-area" [text]="ipsumText" >
+  </div>
+</div>`;
+
+  ex4 = `<div class="line-clamp-content-box">
+  <div ngxLineClamp class="text-area"  [text]="ipsumText" >
+  </div>
+</div>`;
+
+  ex5 = `<div class="line-clamp-padding-box">
+  <div ngxLineClamp class="text-area"  [text]="ipsumText" >
+  </div>
+</div>`;
+
+  ex6 = `<div #custom class="custom">
+  <div class="custom-box">
+    custom-box area
+  </div>
+  <div class="text-box">
+    <div>
+      text-box-top-area
+    </div>
+    <div class="line-clamp-custom-parent" >
+      <div ngxLineClamp class="text-area" [text]="ipsumText" [parentElement]="custom">
+      </div>
+    </div>
+  </div>
+</div>`;
+
+  ngOnInit() {
   }
 }

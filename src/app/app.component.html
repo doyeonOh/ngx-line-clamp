@@ -1,55 +1,61 @@
 <div>
-  <h3>line clamp</h3>
+  <h1>ngx-line-clamp</h1>
 </div>
 <div>
-  <h1>LineClamp</h1>
+  <h2>default</h2>
+  <ngx-prism [language]="'html'">{{ex1}}</ngx-prism>
   <div class="line-clamp">
-    <div ngxLineClamp class="text-area" [text]="testContent">
+    <div ngxLineClamp class="text-area" [text]="ipsumText">
     </div>
   </div>
 
-  <h1>lineClamp - LineCount 3</h1>
+  <h2>lineCount=3</h2>
+  <ngx-prism [language]="'html'">{{ex2}}</ngx-prism>
   <div class="line-clamp">
-    <div ngxLineClamp class="text-area" [text]="testContent" [lineCount]="3">
+    <div ngxLineClamp class="text-area" [text]="ipsumText" [lineCount]="3">
     </div>
   </div>
   
-  <h1>lineClamp - dynamic box-sizing='border-box'</h1>
+  <h2>css - box-sizing='border-box'</h2>
+  <ngx-prism [language]="'html'">{{ex3}}</ngx-prism>
   <div class="warpper">
     <div class="line-clamp-border-box">
-      <div ngxLineClamp class="text-area" [text]="testContent" >
+      <div ngxLineClamp class="text-area" [text]="ipsumText" >
       </div>
     </div>
   </div>
 
-  <h1>lineClamp - dynamic box-sizing='content-box'</h1>
+  <h2>css - box-sizing='content-box'</h2>
+  <ngx-prism [language]="'html'">{{ex4}}</ngx-prism>
   <div class="warpper">
     <div class="line-clamp-content-box">
-      <div ngxLineClamp class="text-area"  [text]="testContent" >
+      <div ngxLineClamp class="text-area"  [text]="ipsumText" >
       </div>
     </div>
   </div>
 
-  <h1>lineClamp - dynamic box-sizing='padding-box'</h1>
+  <h2>css - box-sizing='padding-box'</h2>
+  <ngx-prism [language]="'html'">{{ex5}}</ngx-prism>
   <div class="warpper">
     <div class="line-clamp-padding-box">
-      <div ngxLineClamp class="text-area"  [text]="testContent" >
+      <div ngxLineClamp class="text-area"  [text]="ipsumText" >
       </div>
     </div>
   </div>
 
 
-  <h1>lineClamp - custom parent element</h1>
-  <div class="custom" *ngIf="test">
+  <h2>custom parent element</h2>
+  <ngx-prism [language]="'html'">{{ex6}}</ngx-prism>
+  <div #custom class="custom">
     <div class="custom-box">
-      dasfas
+      custom-box area
     </div>
     <div class="text-box">
       <div>
-        hello world
+        text-box top area
       </div>
       <div class="line-clamp-custom-parent" >
-        <div ngxLineClamp class="text-area" [text]="testContent" [parentClass]="'custom'">
+        <div ngxLineClamp class="text-area" [text]="ipsumText" [parentElement]="custom">
         </div>
       </div>
     </div>
