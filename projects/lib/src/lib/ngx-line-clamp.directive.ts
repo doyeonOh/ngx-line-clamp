@@ -94,7 +94,8 @@ export class NgxLineClampDirective implements  AfterViewInit {
     }
 
     const maxLine = Math.floor(parentElementHeight / parseInt(lineHeight, 10));
-    const maximumHeight = (this.lineCount || maxLine) * parseInt(lineHeight, 10);
+    const adder = 1; // 높이 오차 보정
+    const maximumHeight = (this.lineCount || maxLine) * parseInt(lineHeight, 10) + adder;
 
     return maximumHeight;
   }
