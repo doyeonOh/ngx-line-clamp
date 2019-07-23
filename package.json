@@ -29,7 +29,7 @@
     "@ngx-prism/core": "^2.0.1",
     "@types/prismjs": "1.9.0",
     "core-js": "^2.6.5",
-    "lodash-es": "4.17.10",
+    "lodash-es": "^4.17.11",
     "prismjs": "1.9.0",
     "rxjs": "6.3.3",
     "zone.js": "^0.8.29"
