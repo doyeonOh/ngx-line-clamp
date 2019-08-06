@@ -9,3 +9,4 @@ import { NgxLineClampDirective } from './ngx-line-clamp.directive';
   providers: [],
 })
 export class NgxLineClampModule { }
+
