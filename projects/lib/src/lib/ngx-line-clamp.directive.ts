@@ -1,6 +1,18 @@
-import { AfterViewInit, Directive, ElementRef, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable, Subject } from 'rxjs';
-import { filter, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
 
 const TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX = /[ .,;!?'‘’“”\-–—]+$/;
 const STYLE = 'overflow:hidden;overflow-wrap:break-word;word-wrap:break-word';
@@ -10,7 +22,7 @@ const WHITE_SPACE = ' ';
   // tslint:disable-next-line:directive-selector
   selector: '[ngxLineClamp]'
 })
-export class NgxLineClampDirective implements OnInit, OnDestroy, AfterViewInit {
+export class NgxLineClampDirective implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input()
   public lineCount: number;
   @Input()
@@ -21,8 +33,9 @@ export class NgxLineClampDirective implements OnInit, OnDestroy, AfterViewInit {
   public set parentElement(parentElement: HTMLElement) {
     this._parentElement = parentElement;
   }
+  @Output() textTruncated: EventEmitter = new EventEmitter<void>();
 
-  public get parentElement() {
+  public get parentElement(): HTMLElement {
     return this._parentElement;
   }
 
@@ -35,6 +48,7 @@ export class NgxLineClampDirective implements OnInit, OnDestroy, AfterViewInit {
   private get lineClampAction$(): Observable<any> {
     return this.lineClamp$.pipe(
       filter(v => !!v),
+      debounceTime(0),
       tap(() => {
         this.setElementVariables();
         this.setStyle(this.rootElement, STYLE);
@@ -45,9 +59,10 @@ export class NgxLineClampDirective implements OnInit, OnDestroy, AfterViewInit {
         this.removeChildNodes(this.rootElement);
         this.rootElement.appendChild(textNode);
 
-        const isContentFull = this.truncateTextNode(this.text, textNode, limitedMaxHeight);
+        const isTruncateText = this.truncateTextNode(this.text, textNode, limitedMaxHeight);
 
-        if (isContentFull) {
+        if (isTruncateText) {
+          this.textTruncated.emit();
           this.makeEllipsisInTrailing(textNode, limitedMaxHeight);
         }
       })
@@ -63,19 +78,24 @@ export class NgxLineClampDirective implements OnInit, OnDestroy, AfterViewInit {
     ]).pipe(takeUntil(this.destroyed$)).subscribe();
   }
 
+  public ngOnChanges(changes: SimpleChanges): void {
+    this.runLineClamp();
+  }
+
   public ngAfterViewInit(): void {
-    this.lineClamp$.next({
-      rootElement: this.rootElement,
-      parentElement: this.parentElement
-    });
+    this.runLineClamp();
   }
 
   public ngOnDestroy() {
     this.destroyed$.next();
   }
 
-  @HostListener('window:resize', ['$event'])
-  public scrollHandler(e: any) {
+  @HostListener('window:resize')
+  public scrollHandler() {
+    this.runLineClamp();
+  }
+
+  public runLineClamp() {
     this.lineClamp$.next(true);
   }
 
@@ -134,9 +154,7 @@ export class NgxLineClampDirective implements OnInit, OnDestroy, AfterViewInit {
 
     const maxLine = Math.floor(parentElementHeight / parseInt(lineHeight, 10));
     const adder = 1; // 높이 오차 보정
-    const limitedMaxHeight = (this.lineCount || maxLine) * parseInt(lineHeight, 10) + adder;
-
-    return limitedMaxHeight;
+    return (this.lineCount || maxLine) * parseInt(lineHeight, 10) + adder;
   }
 
   private hasScrollInElement(parentElement: HTMLElement) {

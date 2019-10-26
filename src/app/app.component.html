@@ -5,7 +5,7 @@
   <h2>default</h2>
   <ngx-prism [language]="'html'">{{ex1}}</ngx-prism>
   <div class="line-clamp">
-    <div ngxLineClamp class="text-area" [text]="ipsumText">
+    <div ngxLineClamp class="text-area" [text]="ipsumText" (textTruncated)="onTextTruncated($event)">
     </div>
   </div>
 
@@ -15,7 +15,7 @@
     <div ngxLineClamp class="text-area" [text]="ipsumText" [lineCount]="3">
     </div>
   </div>
-  
+
   <h2>css - box-sizing='border-box'</h2>
   <ngx-prism [language]="'html'">{{ex3}}</ngx-prism>
   <div class="warpper">
