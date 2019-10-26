@@ -1,67 +1,106 @@
-import { Directive, Input, AfterViewInit, ElementRef, OnInit, HostListener, OnChanges, AfterViewChecked } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, forkJoin, Observable, Subject } from 'rxjs';
+import { filter, takeUntil, tap } from 'rxjs/operators';
+
+const TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX = /[ .,;!?'‘’“”\-–—]+$/;
+const STYLE = 'overflow:hidden;overflow-wrap:break-word;word-wrap:break-word';
+const WHITE_SPACE = ' ';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
   selector: '[ngxLineClamp]'
 })
-export class NgxLineClampDirective implements  AfterViewInit {
-  @Input() lineCount: number;
-  @Input() text: string;
-  @Input() ellipsis = '\u2026';
-  @Input() parentElement: HTMLElement;
+export class NgxLineClampDirective implements OnInit, OnDestroy, AfterViewInit {
+  @Input()
+  public lineCount: number;
+  @Input()
+  public text: string;
+  @Input()
+  public ellipsis = '\u2026';
+  @Input()
+  public set parentElement(parentElement: HTMLElement) {
+    this._parentElement = parentElement;
+  }
 
-  rootElement: any;
+  public get parentElement() {
+    return this._parentElement;
+  }
 
-  TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX = /[ .,;!?'‘’“”\-–—]+$/;
+  private _parentElement: HTMLElement;
+  private rootElement: HTMLElement;
 
-  STYLE = 'overflow:hidden;overflow-wrap:break-word;word-wrap:break-word';
+  private lineClamp$ = new BehaviorSubject<any>(null);
+  private destroyed$ = new Subject<void>();
+
+  private get lineClampAction$(): Observable<any> {
+    return this.lineClamp$.pipe(
+      filter(v => !!v),
+      tap(() => {
+        this.setElementVariables();
+        this.setStyle(this.rootElement, STYLE);
+
+        const limitedMaxHeight = this.getLimitedMaxHeight(this.rootElement, this.parentElement);
+        const textNode = document.createTextNode('');
+
+        this.removeChildNodes(this.rootElement);
+        this.rootElement.appendChild(textNode);
+
+        const isContentFull = this.truncateTextNode(this.text, textNode, limitedMaxHeight);
+
+        if (isContentFull) {
+          this.makeEllipsisInTrailing(textNode, limitedMaxHeight);
+        }
+      })
+    );
+  }
 
   constructor(private el: ElementRef) {
   }
 
-  ngAfterViewInit(): void {
-    this.setElementVariables();
-    this.setStyle(this.rootElement, this.STYLE);
+  public ngOnInit() {
+    forkJoin([
+      this.lineClampAction$
+    ]).pipe(takeUntil(this.destroyed$)).subscribe();
+  }
 
-    setTimeout(() => {
-      this.runLineClamp(this.rootElement, this.parentElement, this.text, this.ellipsis);
+  public ngAfterViewInit(): void {
+    this.lineClamp$.next({
+      rootElement: this.rootElement,
+      parentElement: this.parentElement
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  scrollHandler(e: any) {
-    this.runLineClamp(this.rootElement, this.parentElement, this.text, this.ellipsis);
+  public ngOnDestroy() {
+    this.destroyed$.next();
   }
 
-  setElementVariables() {
+  @HostListener('window:resize', ['$event'])
+  public scrollHandler(e: any) {
+    this.lineClamp$.next(true);
+  }
+
+  private setElementVariables() {
     this.rootElement = this.el.nativeElement;
 
     if (!this.parentElement) {
-      this.parentElement = this.rootElement.parentNode;
+      this.parentElement = this.rootElement.parentNode as HTMLElement;
     }
   }
 
-  runLineClamp(rootElement: HTMLElement, parentElement: HTMLElement, text: string, ellipsis: string) {
-    const parentElementHeight = this.extractPureHeight(parentElement);
-    const maximumHeight = this.calculationMaximumHeight(rootElement, parentElementHeight);
-
-    this.truncateElementNode(rootElement, parentElement, maximumHeight, text, ellipsis);
-  }
-
-  setStyle(element: HTMLElement, style: string) {
+  private setStyle(element: HTMLElement, style: string) {
     element.style.cssText += style;
   }
 
-  getComputedStyle(element: HTMLElement, property: string): string {
+  private getComputedStyle(element: HTMLElement, property: string): string {
     return window.getComputedStyle(element)[property];
   }
 
-  getComputedStyleToPx(element: HTMLElement, property: string): number {
+  private getComputedStyleToPx(element: HTMLElement, property: string): number {
     const propertyStyle = this.getComputedStyle(element, property);
     return parseInt(propertyStyle.split('px')[0], 10);
   }
 
-  extractPureHeight(element: HTMLElement) {
+  private extractPureElementHeight(element: HTMLElement) {
     const boxSizing = this.getComputedStyle(element, 'boxSizing');
     let height = this.getComputedStyleToPx(element, 'height');
 
@@ -83,7 +122,7 @@ export class NgxLineClampDirective implements  AfterViewInit {
     return height;
   }
 
-  calculationMaximumHeight(element: HTMLElement, parentElementHeight: number) {
+  private calculateElementMaxHeight(element: HTMLElement, parentElementHeight: number) {
     let lineHeight = this.getComputedStyle(element, 'lineHeight');
 
     if (lineHeight === 'normal') {
@@ -95,104 +134,48 @@ export class NgxLineClampDirective implements  AfterViewInit {
 
     const maxLine = Math.floor(parentElementHeight / parseInt(lineHeight, 10));
     const adder = 1; // 높이 오차 보정
-    const maximumHeight = (this.lineCount || maxLine) * parseInt(lineHeight, 10) + adder;
+    const limitedMaxHeight = (this.lineCount || maxLine) * parseInt(lineHeight, 10) + adder;
 
-    return maximumHeight;
+    return limitedMaxHeight;
   }
 
-  isOutOfParentArea(parentElement: HTMLElement) {
+  private hasScrollInElement(parentElement: HTMLElement) {
     return parentElement.scrollHeight > parentElement.offsetHeight;
   }
 
-  truncateTextNode(textNode: Text, rootElement: HTMLElement, parentElement: HTMLElement,
-    maximumHeight: number, text: string, ellipsis: string) {
+  private truncateTextNode(text: string, textNode: Text, limitedMaxHeight: number): boolean {
+    const words = text.split(WHITE_SPACE);
 
-    let splitCharacter = ' ';
-    let textSplitArray = text.split(splitCharacter);
+    let newTextContent = '';
+    let prevTextContent = '';
+    let wordIndex = 0;
+    let isContentFull = false;
 
-    if (textSplitArray.length === 1) {
-      splitCharacter = '';
-      textSplitArray = text.split(splitCharacter);
-    }
-
-    let remainTextContent = '';
-    let indexOfWhitespace = 0;
-    let hasFullyContent = false;
-
-    while (textSplitArray.length !== 0) {
-      if (indexOfWhitespace + 1 > textSplitArray.length) {
+    while (words.length !== 0) {
+      if (wordIndex + 1 > words.length) {
         break;
       }
 
-      indexOfWhitespace = indexOfWhitespace + 1;
-      remainTextContent = textSplitArray.slice(0, indexOfWhitespace).join(splitCharacter);
+      wordIndex = wordIndex + 1;
+      newTextContent = words.slice(0, wordIndex).join(WHITE_SPACE);
 
-      textNode.textContent = remainTextContent;
+      textNode.textContent = newTextContent;
 
-      const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
 
-      if (rootHeight >= maximumHeight) {
-        hasFullyContent = true;
+      const rootHeight = this.getComputedStyleToPx(this.rootElement, 'height');
+      const isRootElementOverMaxHeight = rootHeight >= limitedMaxHeight;
+
+      if (isRootElementOverMaxHeight || this.hasScrollInElement(this.parentElement)) {
+        textNode.textContent = prevTextContent;
+        isContentFull = true;
         break;
       }
 
-      if (this.isOutOfParentArea(parentElement)) {
-        textNode.textContent = textSplitArray.slice(0, indexOfWhitespace - 1).join(splitCharacter);
-        hasFullyContent = true;
-        break;
-      }
+      prevTextContent = newTextContent;
     }
 
-    return this.truncateTextNodeByCharacter(
-      textNode,
-      rootElement,
-      parentElement,
-      maximumHeight,
-      ellipsis,
-      hasFullyContent
-    );
-  }
+    return isContentFull;
 
-  truncateTextNodeByCharacter (textNode: Text, rootElement: HTMLElement, parentElement: HTMLElement,
-    maximumHeight: number, ellipsisCharacter: string, hasFullyContent: boolean) {
-
-    let textContent = textNode.textContent;
-    let length = textContent.length;
-
-    let limitCount = 30;
-
-    while (length > 1 && limitCount > 0) {
-
-      // Trim off one trailing character and any trailing punctuation and whitespace.
-      if (hasFullyContent) {
-        textContent = textContent
-          .substring(0, length - 1)
-          .replace(this.TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX, '');
-        length = textContent.length;
-        textNode.textContent = textContent + ellipsisCharacter;
-      }
-
-      const rootHeight = this.getComputedStyleToPx(rootElement, 'height');
-
-      if (rootHeight <= maximumHeight && !this.isOutOfParentArea(parentElement)) {
-        return true;
-      }
-
-      limitCount--;
-    }
-    return false;
-  }
-
-  truncateElementNode(rootElement: HTMLElement, parentElement: HTMLElement, maximumHeight: number, text: string, ellipsis: string) {
-    this.removeChildNodes(rootElement);
-
-    const textNode = this.appendTextNode(rootElement);
-
-    if (this.truncateTextNode(textNode, rootElement, parentElement, maximumHeight, text, ellipsis)) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   private removeChildNodes(element: HTMLElement) {
@@ -203,10 +186,35 @@ export class NgxLineClampDirective implements  AfterViewInit {
     }
   }
 
-  private appendTextNode(element: HTMLElement) {
-    const textNode = document.createTextNode('');
-    element.appendChild(textNode);
-    return textNode;
+  private makeEllipsisInTrailing(textNode: Text, limitedMaxHeight: number) {
+    let textContent = textNode.textContent;
+    let length = textContent.length;
+
+    let limitCount = 30;
+
+    while (length > 1 && limitCount > 0) {
+
+      // Trim off one trailing character and any trailing punctuation and whitespace.
+      textContent = textContent
+        .substring(0, length - 1)
+        .replace(TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX, '');
+      length = textContent.length;
+      textNode.textContent = textContent + this.ellipsis;
+
+      const rootHeight = this.getComputedStyleToPx(this.rootElement, 'height');
+      const isRootElementInMaxHeight = rootHeight <= limitedMaxHeight;
+
+      if (isRootElementInMaxHeight && !this.hasScrollInElement(this.parentElement)) {
+        break;
+      }
+
+      limitCount--;
+    }
+  }
+
+  private getLimitedMaxHeight(rootElement: HTMLElement, parentElement: HTMLElement) {
+    const parentElHeight = this.extractPureElementHeight(parentElement);
+    return this.calculateElementMaxHeight(rootElement, parentElHeight);
   }
 }
 
