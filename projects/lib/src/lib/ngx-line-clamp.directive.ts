@@ -33,7 +33,7 @@ export class NgxLineClampDirective implements OnInit, OnChanges, OnDestroy, Afte
   public set parentElement(parentElement: HTMLElement) {
     this._parentElement = parentElement;
   }
-  @Output() textTruncated: EventEmitter = new EventEmitter<void>();
+  @Output() textTruncated = new EventEmitter<string>();
 
   public get parentElement(): HTMLElement {
     return this._parentElement;
@@ -62,7 +62,7 @@ export class NgxLineClampDirective implements OnInit, OnChanges, OnDestroy, Afte
         const isTruncateText = this.truncateTextNode(this.text, textNode, limitedMaxHeight);
 
         if (isTruncateText) {
-          this.textTruncated.emit();
+          this.textTruncated.emit(textNode.textContent);
           this.makeEllipsisInTrailing(textNode, limitedMaxHeight);
         }
       })

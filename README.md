@@ -27,13 +27,18 @@ import { NgxLineClampModule } from 'ngx-line-clamp';
 </div>
 ```
 
-## option
+## input
 | option | description |
 | ----------- | ---------- |
 | text | (required) Text to use in line clamp div.  |
 | lineCount | (option) Maximum number of lines  |
 | parentElement | (option) A parent element with a maximum size that can extend the line clamp. (default: ngxLineClamp wrapper) |
 | ellipsis| (option) Abbreviation display character. (default: ...) |
+
+## output
+| | |
+| ----------- | ---------- |
+| textTruncated | called when text was truncated | 
 
 ## License
 MIT
