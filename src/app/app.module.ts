@@ -1,18 +1,16 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { NgxLineClampModule } from '../../projects/lib/src/lib/ngx-line-clamp.module';
 
 import { AppComponent } from './app.component';
-import { NgxLineClampDirective } from './../../projects/lib/src/lib/ngx-line-clamp.directive';
-import { PrismModule } from '@ngx-prism/core';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    NgxLineClampDirective
+    AppComponent
   ],
   imports: [
     BrowserModule,
-    PrismModule
+    NgxLineClampModule
   ],
   providers: [],
   bootstrap: [AppComponent]
