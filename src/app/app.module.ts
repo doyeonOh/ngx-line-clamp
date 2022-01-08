@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { MarkdownModule } from 'ngx-markdown';
 import { NgxLineClampModule } from '../../projects/lib/src/lib/ngx-line-clamp.module';
 
 import { AppComponent } from './app.component';
@@ -10,7 +11,8 @@ import { AppComponent } from './app.component';
   ],
   imports: [
     BrowserModule,
-    NgxLineClampModule
+    NgxLineClampModule,
+    MarkdownModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
