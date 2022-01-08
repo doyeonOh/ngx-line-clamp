@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "patch": "cd projects/lib &&  npm version ${VERSION_UP_TYPE:='patch'} && cd ../../dist/lib/ && npm version ${VERSION_UP_TYPE:='patch'} && cd ../../ && npm run publish",
+    "patch": "cd projects/lib &&  npm version ${VERSION_UP_TYPE:='patch'} && cd ../../dist/lib/ && npm version ${VERSION_UP_TYPE:='patch'} && cd ../../",
     "minor": "VERSION_UP_TYPE=minor npm run patch",
     "major": "VERSION_UP_TYPE=major npm run patch",
     "build": "ng build --prod lib",
