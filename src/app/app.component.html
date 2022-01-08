@@ -3,61 +3,15 @@
 </div>
 <div>
   <h2>default</h2>
-<!--  <ngx-prism [language]="'html'">{{ex1}}</ngx-prism>-->
-  <div class="line-clamp">
-    <div ngxLineClamp class="text-area" [text]="ipsumText" (textTruncated)="onTextTruncated($event)">
-    </div>
+  <markdown [data]="ex1"></markdown>
+  <div style="width: 300px;height: 250px;border: 1px solid black;">
+    <div ngxLineClamp style="background: #ccc;" [text]="ipsumText"></div>
   </div>
 
   <h2>lineCount=3</h2>
-<!--  <ngx-prism [language]="'html'">{{ex2}}</ngx-prism>-->
-  <div class="line-clamp">
-    <div ngxLineClamp class="text-area" [text]="ipsumText" [lineCount]="3">
-    </div>
-  </div>
-
-  <h2>css - box-sizing='border-box'</h2>
-<!--  <ngx-prism [language]="'html'">{{ex3}}</ngx-prism>-->
-  <div class="warpper">
-    <div class="line-clamp-border-box">
-      <div ngxLineClamp class="text-area" [text]="ipsumText" >
-      </div>
-    </div>
-  </div>
-
-  <h2>css - box-sizing='content-box'</h2>
-<!--  <ngx-prism [language]="'html'">{{ex4}}</ngx-prism>-->
-  <div class="warpper">
-    <div class="line-clamp-content-box">
-      <div ngxLineClamp class="text-area"  [text]="ipsumText" >
-      </div>
-    </div>
-  </div>
-
-  <h2>css - box-sizing='padding-box'</h2>
-<!--  <ngx-prism [language]="'html'">{{ex5}}</ngx-prism>-->
-  <div class="warpper">
-    <div class="line-clamp-padding-box">
-      <div ngxLineClamp class="text-area"  [text]="ipsumText" >
-      </div>
-    </div>
-  </div>
-
-
-  <h2>custom parent element</h2>
-<!--  <ngx-prism [language]="'html'">{{ex6}}</ngx-prism>-->
-  <div #custom class="custom">
-    <div class="custom-box">
-      custom-box area
-    </div>
-    <div class="text-box">
-      <div>
-        text-box top area
-      </div>
-      <div class="line-clamp-custom-parent" >
-        <div ngxLineClamp class="text-area" [text]="ipsumText" [parentElement]="custom">
-        </div>
-      </div>
+  <markdown [data]="ex2"></markdown>
+  <div style="width: 300px;height: 250px;border: 1px solid black;">
+    <div ngxLineClamp style="background: #ccc;" [text]="ipsumText" [lineCount]="3">
     </div>
   </div>
 </div>
