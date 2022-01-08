@@ -1,12 +1,12 @@
 # NgxLineClamp
 
-angular 6+ simple line clamp. inspired by [line-clamp](https://github.com/yuanqing/line-clamp).
+angular simple line clamp. inspired by [line-clamp](https://github.com/yuanqing/line-clamp).
 working fine on responsive UI. [example](https://ngx-line-clamp.firebaseapp.com/)
 
 
 ## Install
 ```
-npm install --save ngx-line-clamp
+npm install ngx-line-clamp
 ```
 
 ## Import
@@ -23,7 +23,9 @@ import { NgxLineClampModule } from 'ngx-line-clamp';
 ```
 ## Usage
 ```html
-<div ngxLineClamp class="text-area" [text]="text">
+<div style="height: 100px;">
+  <div ngxLineClamp [text]="text">
+  </div>
 </div>
 ```
 
